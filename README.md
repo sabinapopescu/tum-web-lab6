@@ -126,3 +126,7 @@ src/
 - Accessible modals with Escape to close
 - Export / Import JSON for data backup
 - Fully client-side, no server required
+
+## Deployed on
+
+https://github.com/sabinapopescu/tum-web-lab6/deployments/github-pages
