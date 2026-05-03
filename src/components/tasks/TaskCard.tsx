@@ -1,10 +1,11 @@
 import { useState } from 'react';
-import { Trash2, Circle, CheckCircle, Clock, CalendarDays } from 'lucide-react';
+import { Trash2, Circle, CheckCircle, Clock, CalendarDays, Pencil } from 'lucide-react';
 import type { Task } from '../../types';
 import { useStore, useToast } from '../../context/useStore';
 import { TypeBadge, PriorityBadge } from '../shared/Badge';
 import { Modal } from '../shared/Modal';
 import { Button } from '../shared/Button';
+import { EditTaskModal } from './EditTaskModal';
 
 const STATUS_COLORS: Record<Task['status'], string> = {
   'Todo': 'var(--text-subtle)',
@@ -33,6 +34,7 @@ export function TaskCard({ task }: { task: Task }) {
   const { dispatch } = useStore();
   const { showToast } = useToast();
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const [showEdit, setShowEdit] = useState(false);
 
   const isDone = task.status === 'Done';
   const due = task.dueDate && !isDone ? getDueDateInfo(task.dueDate) : null;
@@ -128,20 +130,36 @@ export function TaskCard({ task }: { task: Task }) {
             </span>
           )}
 
-          <button
-            onClick={() => setConfirmDelete(true)}
-            aria-label="Delete task"
-            style={{
-              marginLeft: 'auto', background: 'var(--bg-muted)', border: 'none',
-              borderRadius: 8, width: 30, height: 30, display: 'flex',
-              alignItems: 'center', justifyContent: 'center',
-              cursor: 'pointer', color: 'var(--text-subtle)',
-            }}
-          >
-            <Trash2 size={13} />
-          </button>
+          <div style={{ display: 'flex', gap: 4, marginLeft: 'auto' }}>
+            <button
+              onClick={() => setShowEdit(true)}
+              aria-label="Edit task"
+              style={{
+                background: 'var(--bg-muted)', border: 'none',
+                borderRadius: 8, width: 30, height: 30, display: 'flex',
+                alignItems: 'center', justifyContent: 'center',
+                cursor: 'pointer', color: 'var(--text-subtle)',
+              }}
+            >
+              <Pencil size={13} />
+            </button>
+            <button
+              onClick={() => setConfirmDelete(true)}
+              aria-label="Delete task"
+              style={{
+                background: 'var(--bg-muted)', border: 'none',
+                borderRadius: 8, width: 30, height: 30, display: 'flex',
+                alignItems: 'center', justifyContent: 'center',
+                cursor: 'pointer', color: 'var(--text-subtle)',
+              }}
+            >
+              <Trash2 size={13} />
+            </button>
+          </div>
         </div>
       </div>
+
+      {showEdit && <EditTaskModal task={task} onClose={() => setShowEdit(false)} />}
 
       {confirmDelete && (
         <Modal title="Delete Task" onClose={() => setConfirmDelete(false)} width={400}>
