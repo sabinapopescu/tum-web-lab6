@@ -4,7 +4,7 @@ A client-side project management dashboard for developers to track technical tas
 
 ## Live Demo
 
-> Deployed at: ``
+> [Deployed at: ``](https://sabinapopescu.github.io/tum-web-lab6/)
 
 ## Description
 
