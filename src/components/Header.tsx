@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Sun, Moon, Database, Menu, X, Zap } from 'lucide-react';
-import { useTheme } from '../context/useStore';
+import { useTheme, useStore } from '../context/useStore';
 import { DataPanel } from './DataPanel';
 import type { Page } from '../types';
 
@@ -17,8 +17,11 @@ const tabs: { id: Page; label: string }[] = [
 
 export function Header({ page, setPage }: Props) {
   const { theme, toggleTheme } = useTheme();
+  const { tasks } = useStore();
   const [showData, setShowData] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+
+  const openCount = tasks.filter((t) => t.status !== 'Done').length;
 
   function navigate(p: Page) {
     setPage(p);
@@ -37,6 +40,17 @@ export function Header({ page, setPage }: Props) {
     cursor: 'pointer',
     color: 'var(--text-muted)',
   };
+
+  const countBadge = (
+    <span style={{
+      display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+      minWidth: 17, height: 17, borderRadius: 9999,
+      background: 'var(--primary)', color: '#fff',
+      fontSize: 10, fontWeight: 700, padding: '0 4px', lineHeight: 1,
+    }}>
+      {openCount > 99 ? '99+' : openCount}
+    </span>
+  );
 
   return (
     <>
@@ -81,6 +95,9 @@ export function Header({ page, setPage }: Props) {
                 key={tab.id}
                 onClick={() => navigate(tab.id)}
                 style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 6,
                   background: page === tab.id ? 'var(--primary-light)' : 'transparent',
                   color: page === tab.id ? 'var(--primary)' : 'var(--text-muted)',
                   border: 'none',
@@ -94,6 +111,7 @@ export function Header({ page, setPage }: Props) {
                 }}
               >
                 {tab.label}
+                {tab.id === 'tasks' && openCount > 0 && countBadge}
               </button>
             ))}
           </nav>
@@ -133,7 +151,9 @@ export function Header({ page, setPage }: Props) {
                 key={tab.id}
                 onClick={() => navigate(tab.id)}
                 style={{
-                  display: 'block',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 8,
                   width: '100%',
                   textAlign: 'left',
                   background: page === tab.id ? 'var(--primary-light)' : 'transparent',
@@ -148,6 +168,7 @@ export function Header({ page, setPage }: Props) {
                 }}
               >
                 {tab.label}
+                {tab.id === 'tasks' && openCount > 0 && countBadge}
               </button>
             ))}
           </div>
