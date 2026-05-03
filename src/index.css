@@ -137,4 +137,7 @@ body {
 
 @media (max-width: 400px) {
   .btn-label { display: none; }
+  .task-row-badges { display: none; }
 }
+
+[draggable]:active { cursor: grabbing; }

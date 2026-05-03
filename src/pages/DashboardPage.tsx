@@ -40,7 +40,7 @@ export function DashboardPage() {
         </button>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, marginBottom: 24 }}>
+      <div className="dashboard-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, marginBottom: 24 }}>
         {[
           { label: 'Total Tasks', value: tasks.length, accent: undefined as string | undefined },
           { label: 'Active', value: active.length, accent: active.length > 0 ? 'var(--primary)' : undefined },
@@ -72,8 +72,10 @@ export function DashboardPage() {
                 <span style={{ flex: 1, fontSize: 13, fontFamily: 'monospace', color: 'var(--text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                   {task.title}
                 </span>
-                <TypeBadge taskType={task.type} />
-                <PriorityBadge priority={task.priority} />
+                <span className="task-row-badges" style={{ display: 'contents' }}>
+                  <TypeBadge taskType={task.type} />
+                  <PriorityBadge priority={task.priority} />
+                </span>
               </div>
             ))}
             {active.length > 10 && (
