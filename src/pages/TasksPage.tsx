@@ -24,7 +24,16 @@ export function TasksPage() {
     return () => document.removeEventListener('keydown', handler);
   }, []);
 
-  const sorted = [...tasks].sort((a, b) => b.createdAt - a.createdAt);
+  const today = new Date().toISOString().slice(0, 10);
+  const sorted = [...tasks].sort((a, b) => {
+    const aOverdue = !!(a.dueDate && a.dueDate < today && a.status !== 'Done');
+    const bOverdue = !!(b.dueDate && b.dueDate < today && b.status !== 'Done');
+    if (aOverdue !== bOverdue) return aOverdue ? -1 : 1;
+    if (a.dueDate && b.dueDate) return a.dueDate < b.dueDate ? -1 : a.dueDate > b.dueDate ? 1 : 0;
+    if (a.dueDate) return -1;
+    if (b.dueDate) return 1;
+    return b.createdAt - a.createdAt;
+  });
 
   return (
     <div style={{ maxWidth: 960, margin: '0 auto', padding: '24px 16px', flex: 1 }}>

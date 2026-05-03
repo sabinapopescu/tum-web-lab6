@@ -10,6 +10,7 @@ export interface Task {
   priority: Priority;
   status: TaskStatus;
   isWatched: boolean;
+  dueDate: string | null; // ISO date "YYYY-MM-DD", optional deadline
   createdAt: number; // ms timestamp
   completedAt: number | null; // ms timestamp, set when status → Done
 }

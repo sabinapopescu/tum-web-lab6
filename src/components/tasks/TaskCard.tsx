@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Trash2, Circle, CheckCircle, Clock } from 'lucide-react';
+import { Trash2, Circle, CheckCircle, Clock, CalendarDays } from 'lucide-react';
 import type { Task } from '../../types';
 import { useStore, useToast } from '../../context/useStore';
 import { TypeBadge, PriorityBadge } from '../shared/Badge';
@@ -12,12 +12,30 @@ const STATUS_COLORS: Record<Task['status'], string> = {
   'Done': '#22c55e',
 };
 
+function getDueDateInfo(dueDate: string) {
+  const due = new Date(dueDate + 'T00:00:00');
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const diff = Math.round((due.getTime() - today.getTime()) / 86400000);
+
+  if (diff < 0) return { label: `${Math.abs(diff)}d overdue`, isOverdue: true, isSoon: false };
+  if (diff === 0) return { label: 'Due today', isOverdue: false, isSoon: true };
+  if (diff === 1) return { label: 'Due tomorrow', isOverdue: false, isSoon: true };
+  if (diff <= 3) return { label: `Due in ${diff}d`, isOverdue: false, isSoon: true };
+  return {
+    label: due.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+    isOverdue: false,
+    isSoon: false,
+  };
+}
+
 export function TaskCard({ task }: { task: Task }) {
   const { dispatch } = useStore();
   const { showToast } = useToast();
   const [confirmDelete, setConfirmDelete] = useState(false);
 
   const isDone = task.status === 'Done';
+  const due = task.dueDate && !isDone ? getDueDateInfo(task.dueDate) : null;
 
   function handleToggleDone() {
     dispatch({ type: 'TOGGLE_DONE', id: task.id });
@@ -31,12 +49,18 @@ export function TaskCard({ task }: { task: Task }) {
     setConfirmDelete(false);
   }
 
+  const borderColor = !isDone && due?.isOverdue
+    ? 'rgba(239,68,68,0.5)'
+    : !isDone && task.priority === 'Critical'
+    ? 'rgba(220,38,38,0.4)'
+    : 'var(--border)';
+
   return (
     <>
       <div
         style={{
           background: 'var(--bg-card)',
-          border: `1.5px solid ${task.priority === 'Critical' && !isDone ? 'rgba(220,38,38,0.4)' : 'var(--border)'}`,
+          border: `1.5px solid ${borderColor}`,
           borderRadius: 14,
           padding: '14px 16px',
           display: 'flex',
@@ -90,6 +114,20 @@ export function TaskCard({ task }: { task: Task }) {
             <Clock size={10} />
             {task.status}
           </span>
+
+          {due && (
+            <span style={{
+              display: 'inline-flex', alignItems: 'center', gap: 4,
+              fontSize: 11, fontWeight: 600,
+              color: due.isOverdue ? '#ef4444' : due.isSoon ? '#f59e0b' : 'var(--text-muted)',
+              background: due.isOverdue ? 'rgba(239,68,68,0.1)' : due.isSoon ? 'rgba(245,158,11,0.1)' : 'var(--bg-muted)',
+              padding: '2px 8px', borderRadius: 9999,
+            }}>
+              <CalendarDays size={10} />
+              {due.label}
+            </span>
+          )}
+
           <button
             onClick={() => setConfirmDelete(true)}
             aria-label="Delete task"

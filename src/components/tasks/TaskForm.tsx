@@ -39,6 +39,7 @@ export function TaskForm({ onSubmit, onCancel, initial }: Props) {
   const [type, setType] = useState<TaskType>(initial?.type ?? 'Feature');
   const [priority, setPriority] = useState<Priority>(initial?.priority ?? 'Medium');
   const [status, setStatus] = useState<TaskStatus>(initial?.status ?? 'Todo');
+  const [dueDate, setDueDate] = useState<string | null>(initial?.dueDate ?? null);
   const [errors, setErrors] = useState<{ title?: string }>({});
 
   function validate() {
@@ -60,6 +61,7 @@ export function TaskForm({ onSubmit, onCancel, initial }: Props) {
           type,
           priority,
           status,
+          dueDate,
           completedAt: status === 'Done' && initial.status !== 'Done'
             ? Date.now()
             : status !== 'Done'
@@ -73,6 +75,7 @@ export function TaskForm({ onSubmit, onCancel, initial }: Props) {
           type,
           priority,
           status,
+          dueDate,
           isWatched: false,
           createdAt: Date.now(),
           completedAt: status === 'Done' ? Date.now() : null,
@@ -198,6 +201,19 @@ export function TaskForm({ onSubmit, onCancel, initial }: Props) {
             </button>
           ))}
         </div>
+      </div>
+
+      {/* Due Date */}
+      <div>
+        <label style={labelStyle}>
+          Due Date <span style={{ color: 'var(--text-subtle)', fontWeight: 400 }}>(optional)</span>
+        </label>
+        <input
+          type="date"
+          value={dueDate ?? ''}
+          onChange={(e) => setDueDate(e.target.value || null)}
+          style={inputStyle}
+        />
       </div>
 
       {/* Actions */}
